@@ -7,9 +7,11 @@
 //
 
 #import <UIKit/UIKit.h>
+#import <CoreLocation/CoreLocation.h>
 
-@interface Home : UIViewController
+@interface Home : UIViewController <CLLocationManagerDelegate>
 
+- (IBAction)btnGetLocationPressed:(id)sender;
 
 @end
 
