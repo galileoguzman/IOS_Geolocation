@@ -68,7 +68,10 @@ CLLocation *locationUAG;
             CLLocationDistance distance = [newLocation distanceFromLocation:locationUAG];
             NSLog(@"Distance %f", distance / 1000.0);
             
+            NSString *stUrl = [NSString stringWithFormat:@"http://maps.apple.com/?q=Restaurants&ll=%f,%f&z20", newLocation.coordinate.latitude, newLocation.coordinate.longitude];
             
+            NSURL *url = [NSURL URLWithString:stUrl];
+            [[UIApplication sharedApplication] openURL:url];
             
         }else{
             NSLog(@"%@", error.debugDescription);
