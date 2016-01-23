@@ -20,6 +20,7 @@ MKAnnotationView *anLocation;
 CLGeocoder *geocoder;
 CLPlacemark *placemark;
 CLLocation *locationUAG;
+CLLocationCoordinate2D mapUAGLocation;
 
 @implementation Home
 
@@ -38,7 +39,7 @@ CLLocation *locationUAG;
     }
     
     locationUAG = [[CLLocation alloc] initWithLatitude:20.6947053 longitude:-103.4203199];
-    
+    mapUAGLocation = CLLocationCoordinate2DMake(20.6947053, -103.4203199);
 }
 
 - (void)didReceiveMemoryWarning {
@@ -86,13 +87,53 @@ CLLocation *locationUAG;
             // circle
             self.mapLocation.userTrackingMode = MKUserTrackingModeFollow;
             
-            // Annotation
+            // Annotation for user current location
             MKPointAnnotation *anLocation = [[MKPointAnnotation alloc] init];
             anLocation.coordinate = CLLocationCoordinate2DMake(mapLocation.latitude, mapLocation.longitude);
             anLocation.title = @"You are here";
             anLocation.subtitle = @"A world is locking you!";
             [self.mapLocation addAnnotation:anLocation];
             
+            // Annotation for Universidad Autonoma de Guadalajara
+            MKPointAnnotation *anLocationUAG = [[MKPointAnnotation alloc] init];
+            anLocationUAG.coordinate = CLLocationCoordinate2DMake(locationUAG.coordinate.latitude, locationUAG.coordinate.longitude);
+            anLocationUAG.title = @"Universidad Autonoma de Guadalajara";
+            anLocationUAG.subtitle = @"AV. Patria 1201, Zapopan Jalisco";
+            [self.mapLocation addAnnotation:anLocationUAG];
+            
+            // Get direction request
+            
+            // Make placemark and map item source
+            MKPlacemark *placemarkSrc = [[MKPlacemark alloc] initWithCoordinate:mapLocation addressDictionary:nil];
+            MKMapItem *mapItemSrc = [[MKMapItem alloc] initWithPlacemark:placemarkSrc];
+            
+            // Make placemark and map item dest
+            MKPlacemark *placemarkDest = [[MKPlacemark alloc] initWithCoordinate:mapUAGLocation addressDictionary:nil];
+            MKMapItem *mapItemDest = [[MKMapItem alloc] initWithPlacemark:placemarkDest];
+            
+            // Make Direction request with before placemark
+            MKDirectionsRequest *dirRequest = [[MKDirectionsRequest alloc] init];
+            [dirRequest setSource:mapItemSrc];
+            [dirRequest setDestination:mapItemDest];
+            
+            [dirRequest setTransportType:MKDirectionsTransportTypeAutomobile];
+            dirRequest.requestsAlternateRoutes = NO;
+            
+            // Get directions
+            MKDirections *directions = [[MKDirections alloc] initWithRequest:dirRequest];
+            
+            // add to map directions
+            [directions calculateDirectionsWithCompletionHandler:
+             ^(MKDirectionsResponse *response, NSError *error) {
+                 if (error) {
+                     // Handle Error
+                 } else {
+                     [self.mapLocation removeOverlays:self.mapLocation.overlays];
+                     [self showRoute:response];
+                 }
+             }];
+            
+            // print map on view
             [self.mapLocation setRegion:viewRegion animated:YES];
             
         }else{
@@ -111,6 +152,23 @@ CLLocation *locationUAG;
 }
 - (void)locationManager:(CLLocationManager *)manager didFinishDeferredUpdatesWithError:(NSError *)error{
     NSLog(@"Cannot find the location: ERROR : %@", error.debugDescription);
+}
+
+-(void)showRoute:(MKDirectionsResponse *)response
+{
+    for (MKRoute *route in response.routes)
+    {
+        [self.mapLocation addOverlay:route.polyline level:MKOverlayLevelAboveRoads];
+    }
+}
+
+- (MKOverlayRenderer *)mapView:(MKMapView *)mapView rendererForOverlay:(id < MKOverlay >)overlay
+{
+    MKPolylineRenderer *renderer =
+    [[MKPolylineRenderer alloc] initWithOverlay:overlay];
+    renderer.strokeColor = [UIColor blueColor];
+    renderer.lineWidth = 5.0;
+    return renderer;
 }
 
 @end
