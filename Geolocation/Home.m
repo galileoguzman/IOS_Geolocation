@@ -86,6 +86,13 @@ CLLocation *locationUAG;
             // circle
             self.mapLocation.userTrackingMode = MKUserTrackingModeFollow;
             
+            // Annotation
+            MKPointAnnotation *anLocation = [[MKPointAnnotation alloc] init];
+            anLocation.coordinate = CLLocationCoordinate2DMake(mapLocation.latitude, mapLocation.longitude);
+            anLocation.title = @"You are here";
+            anLocation.subtitle = @"A world is locking you!";
+            [self.mapLocation addAnnotation:anLocation];
+            
             [self.mapLocation setRegion:viewRegion animated:YES];
             
         }else{
