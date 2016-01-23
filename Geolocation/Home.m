@@ -113,7 +113,7 @@ CLLocationCoordinate2D mapUAGLocation;
             MKPlacemark *placemarkDest = [[MKPlacemark alloc] initWithCoordinate:mapUAGLocation addressDictionary:nil];
             MKMapItem *mapItemDest = [[MKMapItem alloc] initWithPlacemark:placemarkDest];
             
-            // Make Direction request with before placemark
+            // Make Direction request with before placemark FOR AUTOMOBILE
             MKDirectionsRequest *dirRequest = [[MKDirectionsRequest alloc] init];
             [dirRequest setSource:mapItemSrc];
             [dirRequest setDestination:mapItemDest];
@@ -134,6 +134,44 @@ CLLocationCoordinate2D mapUAGLocation;
                      [self showRoute:response];
                  }
              }];
+            
+            /************************************************
+            * Get walking route
+            *
+            ************************************************/
+            
+            
+            MKDirectionsRequest *walkingRouteRequest = [[MKDirectionsRequest alloc] init];
+            walkingRouteRequest.transportType = MKDirectionsTransportTypeWalking;
+            [walkingRouteRequest setSource:mapItemSrc];
+            [walkingRouteRequest setDestination :mapItemDest];
+            
+            
+            
+            MKDirections *walkingRouteDirections = [[MKDirections alloc] initWithRequest:walkingRouteRequest];
+            [walkingRouteDirections calculateDirectionsWithCompletionHandler:^(MKDirectionsResponse * walkingRouteResponse, NSError *walkingRouteError) {
+                
+                if (walkingRouteError) {
+                    
+                    NSLog(@"%@", walkingRouteError.debugDescription);
+                    
+                } else {
+                    
+                    
+                    [self showRoute:walkingRouteResponse];
+                    
+                }
+                
+            }];
+            
+            
+            
+            
+            
+            
+            
+            
+            
             
             // print map on view
             [self.mapLocation setRegion:viewRegion animated:YES];
