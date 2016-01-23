@@ -13,12 +13,21 @@
 @end
 
 CLLocationManager *locationManager;
+CLGeocoder *geocoder;
+CLPlacemark *placemark;
 
 @implementation Home
 
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view, typically from a nib.
+    geocoder = [[CLGeocoder alloc] init];
+    if (locationManager == nil)
+    {
+        locationManager = [[CLLocationManager alloc] init];
+        locationManager.desiredAccuracy = kCLLocationAccuracyNearestTenMeters;
+        locationManager.delegate = self;
+    }
 }
 
 - (void)didReceiveMemoryWarning {
@@ -26,20 +35,45 @@ CLLocationManager *locationManager;
     // Dispose of any resources that can be recreated.
 }
 
-- (void)locationManager:(CLLocationManager *)manager didUpdateToLocation:(CLLocation *)newLocation fromLocation:(CLLocation *)oldLocation {
-    NSLog(@"OldLocation %f %f", oldLocation.coordinate.latitude, oldLocation.coordinate.longitude);
-    NSLog(@"NewLocation %f %f", newLocation.coordinate.latitude, newLocation.coordinate.longitude);
-}
-
 - (IBAction)btnGetLocationPressed:(id)sender {
-    locationManager = [[CLLocationManager alloc] init];
-    locationManager.delegate = self;
-    locationManager.distanceFilter = kCLDistanceFilterNone;
-    locationManager.desiredAccuracy = kCLLocationAccuracyBest;
+    
+    NSLog(@"Button pressed");
+    
+    
     
     if ([[[UIDevice currentDevice] systemVersion] floatValue] >= 8.0)
         [locationManager requestWhenInUseAuthorization];
     
     [locationManager startUpdatingLocation];
+}
+
+-(void)locationManager:(CLLocationManager *)manager didUpdateLocations:(NSArray *)locations {
+    
+    NSLog(@"Delegate locationManager");
+    
+    CLLocation *newLocation = [locations lastObject];
+    
+    [geocoder reverseGeocodeLocation:newLocation completionHandler:^(NSArray *placemarks, NSError *error){
+    
+        if (error == nil && [placemarks count] > 0) {
+            placemark = [placemarks lastObject];
+            NSLog(@"Latitude %f", newLocation.coordinate.latitude);
+            NSLog(@"Latitude %f", newLocation.coordinate.longitude);
+        }else{
+            NSLog(@"%@", error.debugDescription);
+        }
+    
+    }];
+    
+    
+    
+    [locationManager stopUpdatingLocation];
+}
+- (void)locationManager:(CLLocationManager *)manager didFailWithError:(NSError *)error
+{
+    NSLog(@"Cannot find the location: ERROR : %@", error.debugDescription);
+}
+- (void)locationManager:(CLLocationManager *)manager didFinishDeferredUpdatesWithError:(NSError *)error{
+    NSLog(@"Cannot find the location: ERROR : %@", error.debugDescription);
 }
 @end
