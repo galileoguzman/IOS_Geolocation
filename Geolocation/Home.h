@@ -10,7 +10,7 @@
 #import <CoreLocation/CoreLocation.h>
 #import "MapKit/MapKit.h"
 
-@interface Home : UIViewController <CLLocationManagerDelegate>
+@interface Home : UIViewController <CLLocationManagerDelegate, MKMapViewDelegate>
 
 - (IBAction)btnGetLocationPressed:(id)sender;
 @property (strong, nonatomic) IBOutlet MKMapView *mapLocation;

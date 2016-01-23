@@ -16,6 +16,7 @@
 
 CLLocationManager *locationManager;
 CLLocationCoordinate2D mapLocation;
+MKAnnotationView *anLocation;
 CLGeocoder *geocoder;
 CLPlacemark *placemark;
 CLLocation *locationUAG;
@@ -24,6 +25,8 @@ CLLocation *locationUAG;
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    
+    self.mapLocation.delegate = self;
     
     geocoder = [[CLGeocoder alloc] init];
     
@@ -80,7 +83,9 @@ CLLocation *locationUAG;
             mapLocation.longitude = newLocation.coordinate.longitude;
             MKCoordinateRegion viewRegion = MKCoordinateRegionMakeWithDistance(mapLocation, 0.5*METERS_PER_MILE, 0.5*METERS_PER_MILE);
             
-            // 3
+            // circle
+            self.mapLocation.userTrackingMode = MKUserTrackingModeFollow;
+            
             [self.mapLocation setRegion:viewRegion animated:YES];
             
         }else{
@@ -100,4 +105,5 @@ CLLocation *locationUAG;
 - (void)locationManager:(CLLocationManager *)manager didFinishDeferredUpdatesWithError:(NSError *)error{
     NSLog(@"Cannot find the location: ERROR : %@", error.debugDescription);
 }
+
 @end
