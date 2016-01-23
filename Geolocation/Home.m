@@ -8,11 +8,14 @@
 
 #import "Home.h"
 
+#define METERS_PER_MILE 1609.344
+
 @interface Home ()
 
 @end
 
 CLLocationManager *locationManager;
+CLLocationCoordinate2D mapLocation;
 CLGeocoder *geocoder;
 CLPlacemark *placemark;
 CLLocation *locationUAG;
@@ -39,6 +42,11 @@ CLLocation *locationUAG;
     [super didReceiveMemoryWarning];
 }
 
+- (UIStatusBarStyle)preferredStatusBarStyle
+{
+    return UIStatusBarStyleLightContent;
+}
+
 - (IBAction)btnGetLocationPressed:(id)sender {
     
     NSLog(@"Button pressed");
@@ -63,15 +71,17 @@ CLLocation *locationUAG;
             placemark = [placemarks lastObject];
             NSLog(@"Latitude %f", newLocation.coordinate.latitude);
             NSLog(@"Latitude %f", newLocation.coordinate.longitude);
-            
-            
             CLLocationDistance distance = [newLocation distanceFromLocation:locationUAG];
             NSLog(@"Distance %f", distance / 1000.0);
             
-            NSString *stUrl = [NSString stringWithFormat:@"http://maps.apple.com/?q=Restaurants&ll=%f,%f&z20", newLocation.coordinate.latitude, newLocation.coordinate.longitude];
             
-            NSURL *url = [NSURL URLWithString:stUrl];
-            [[UIApplication sharedApplication] openURL:url];
+            // Map setup
+            mapLocation.latitude = newLocation.coordinate.latitude;
+            mapLocation.longitude = newLocation.coordinate.longitude;
+            MKCoordinateRegion viewRegion = MKCoordinateRegionMakeWithDistance(mapLocation, 0.5*METERS_PER_MILE, 0.5*METERS_PER_MILE);
+            
+            // 3
+            [self.mapLocation setRegion:viewRegion animated:YES];
             
         }else{
             NSLog(@"%@", error.debugDescription);
