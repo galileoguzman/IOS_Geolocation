@@ -166,8 +166,8 @@ CLLocationCoordinate2D mapUAGLocation;
 {
     MKPolylineRenderer *renderer =
     [[MKPolylineRenderer alloc] initWithOverlay:overlay];
-    renderer.strokeColor = [UIColor blueColor];
-    renderer.lineWidth = 5.0;
+    renderer.strokeColor = [UIColor colorWithRed:35.0f/255.0f green:164.0f/255.0f blue:182.0f/255.0f alpha:1.0f];
+    renderer.lineWidth = 2.5;
     return renderer;
 }
 
