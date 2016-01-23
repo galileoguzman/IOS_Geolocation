@@ -63,6 +63,8 @@ CLLocationCoordinate2D mapUAGLocation;
     [locationManager startUpdatingLocation];
 }
 
+#pragma mark - Delegates of map view
+
 -(void)locationManager:(CLLocationManager *)manager didUpdateLocations:(NSArray *)locations {
     
     NSLog(@"Delegate locationManager");
@@ -154,6 +156,7 @@ CLLocationCoordinate2D mapUAGLocation;
     NSLog(@"Cannot find the location: ERROR : %@", error.debugDescription);
 }
 
+#pragma mark - Iteration response of MKDirectionResponse for printing points on map view
 -(void)showRoute:(MKDirectionsResponse *)response
 {
     for (MKRoute *route in response.routes)
@@ -162,6 +165,7 @@ CLLocationCoordinate2D mapUAGLocation;
     }
 }
 
+#pragma mark - Delegate method to print route between distance
 - (MKOverlayRenderer *)mapView:(MKMapView *)mapView rendererForOverlay:(id < MKOverlay >)overlay
 {
     MKPolylineRenderer *renderer =
