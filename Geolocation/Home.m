@@ -15,24 +15,28 @@
 CLLocationManager *locationManager;
 CLGeocoder *geocoder;
 CLPlacemark *placemark;
+CLLocation *locationUAG;
 
 @implementation Home
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    // Do any additional setup after loading the view, typically from a nib.
+    
     geocoder = [[CLGeocoder alloc] init];
+    
     if (locationManager == nil)
     {
         locationManager = [[CLLocationManager alloc] init];
         locationManager.desiredAccuracy = kCLLocationAccuracyNearestTenMeters;
         locationManager.delegate = self;
     }
+    
+    locationUAG = [[CLLocation alloc] initWithLatitude:20.6947053 longitude:-103.4203199];
+    
 }
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
 }
 
 - (IBAction)btnGetLocationPressed:(id)sender {
@@ -59,6 +63,13 @@ CLPlacemark *placemark;
             placemark = [placemarks lastObject];
             NSLog(@"Latitude %f", newLocation.coordinate.latitude);
             NSLog(@"Latitude %f", newLocation.coordinate.longitude);
+            
+            
+            CLLocationDistance distance = [newLocation distanceFromLocation:locationUAG];
+            NSLog(@"Distance %f", distance / 1000.0);
+            
+            
+            
         }else{
             NSLog(@"%@", error.debugDescription);
         }
